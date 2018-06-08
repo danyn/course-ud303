@@ -22,18 +22,57 @@ from urllib.parse import parse_qs
 
 
 class MessageHandler(BaseHTTPRequestHandler):
+
+    html_form = """
+        <!DOCTYPE html>
+        <title>Message Board</title>
+        <form method="POST" action="http://localhost:8000/">
+        <textarea name="message" placeholder="what is your message"></textarea>
+        <textarea name="animal" placeholder="what is your favorite animail"></textarea>
+        <br>
+        <button type="submit">Post it!</button>
+        </form>
+        """
+
+
     def do_POST(self):
+        # debug
+        print(self.headers)
+        
+
         # 1. How long was the message? (Use the Content-Length header.)
+        length = int(self.headers.get('Content-length', 0))
+       
 
         # 2. Read the correct amount of data from the request.
-
+        data = self.rfile.read(length).decode()
+        # debug
+        print(data)
         # 3. Extract the "message" field from the request data.
+        # print(data)
+        message=parse_qs(data)
+        # print(message['message'][0])
+
+        #Info
+        info = message['message'][0] + " and " + message['animal'][0]
 
         # Send the "message" field back as the response.
         self.send_response(200)
         self.send_header('Content-type', 'text/plain; charset=utf-8')
         self.end_headers()
-        self.wfile.write(message.encode())
+        self.wfile.write(info.encode())
+    
+    def do_GET(self):
+        print(self.headers)
+        # First, send a 200 OK response.
+        self.send_response(200)
+
+        # Then send headers.
+        self.send_header('Content-type', 'text/html; charset=utf-8')
+        self.end_headers()
+
+        # Send the body
+        self.wfile.write(self.html_form.encode())
 
 if __name__ == '__main__':
     server_address = ('', 8000)

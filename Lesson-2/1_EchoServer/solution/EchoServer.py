@@ -14,7 +14,7 @@ class EchoHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/plain; charset=utf-8')
         self.end_headers()
 
-        # Now, write the response body.
+        # Now, write the response body. Slice removes the leading slash
         self.wfile.write(self.path[1:].encode())
 
 if __name__ == '__main__':

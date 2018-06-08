@@ -45,6 +45,10 @@ class NameHandler(BaseHTTPRequestHandler):
         #    Give the cookie a value from the 'yourname' variable,
         #    a domain (localhost), and a max-age.
 
+        c['yourname'] = yourname
+        c['yourname']['domain'] = 'localhost'
+        c['yourname']['max-age'] = 600
+
         # Send a 303 back to the root page, with a cookie!
         self.send_response(303)  # redirect via GET
         self.send_header('Location', '/')
@@ -52,6 +56,10 @@ class NameHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
+
+        # for header in self.headers:
+        #     print(header)
+      
         # Default message if we don't know a name.
         message = "I don't know you yet!"
 
@@ -61,7 +69,10 @@ class NameHandler(BaseHTTPRequestHandler):
                 # 2. Extract and decode the cookie.
                 #    Get the cookie from the headers and extract its value
                 #    into a variable called 'name'.
+                # print(self.headers['cookie'])
 
+                name = self.headers['cookie'].split("=")[1]
+                # print ('the cookie value is: ' + name)
                 # Craft a message, escaping any HTML special chars in name.
                 message = "Hey there, " + html_escape(name)
             except (KeyError, cookies.CookieError) as e:
